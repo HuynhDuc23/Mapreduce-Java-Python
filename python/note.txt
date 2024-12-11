@@ -1,0 +1,37 @@
+Mã Python bạn cung cấp sử dụng thư viện mrjob để thực hiện một tác vụ phân tích dữ liệu theo kiểu MapReduce. Cụ thể, mã này đếm số lượng sinh viên có và không có trầm cảm, dựa trên mức độ áp lực học tập trong một dataset có định dạng CSV.
+
+Giải thích chi tiết mã nguồn:
+Import thư viện:
+
+from mrjob.job import MRJob và from mrjob.step import MRStep giúp bạn xây dựng một job MapReduce sử dụng mrjob, một thư viện hỗ trợ chạy MapReduce trên môi trường Hadoop hoặc trên máy tính cá nhân.
+Định nghĩa lớp CountDepressionByAcademicPressure:
+
+Lớp này kế thừa từ MRJob, cho phép bạn định nghĩa các bước xử lý MapReduce. Lớp này thực hiện 2 bước:
+Mapper: Phân tích dữ liệu từ dòng CSV và tạo ra các cặp khóa-giá trị.
+Reducer: Đếm số sinh viên có và không có trầm cảm dựa trên mức độ áp lực học tập.
+Các bước trong quá trình xử lý (steps):
+
+steps() định nghĩa các bước MapReduce mà bạn muốn chạy. Trong trường hợp này, nó chỉ có một bước:
+Mapper (hàm mapper_get_academic_pressure): Đọc từng dòng dữ liệu, phân tách thành các trường, bỏ qua dòng tiêu đề, sau đó trích xuất thông tin về mức độ áp lực học tập và trạng thái trầm cảm của sinh viên.
+Reducer (hàm reducer_count_depression): Nhận các cặp khóa-giá trị từ mapper, đếm số lượng sinh viên có trầm cảm (được đánh dấu là "Yes") và không có trầm cảm (được đánh dấu là "No") theo mức độ áp lực học tập.
+Giải thích chi tiết về từng phần:
+
+Mapper (mapper_get_academic_pressure):
+
+Đọc từng dòng từ đầu vào (tệp CSV).
+Nếu dòng là bytes, nó sẽ chuyển thành chuỗi UTF-8.
+Tách dòng thành các trường (fields) bằng dấu phẩy (,).
+Bỏ qua dòng tiêu đề (dòng đầu tiên có trường "Gender").
+Lấy các trường tương ứng: mức độ áp lực học tập (academic_pressure) và trạng thái trầm cảm (depression).
+Phát ra cặp khóa-giá trị dưới dạng (academic_pressure, depression).
+Reducer (reducer_count_depression):
+
+Nhận tất cả các giá trị (trạng thái trầm cảm) cho mỗi khóa (mức độ áp lực học tập).
+Đếm số lượng sinh viên có trầm cảm và không có trầm cảm cho từng mức độ áp lực học tập.
+Phát ra kết quả là một cặp khóa-giá trị, với khóa là mức độ áp lực học tập và giá trị là một dictionary chứa số lượng sinh viên có và không có trầm cảm.
+Cuối cùng, trong phần if __name__ == '__main__'::
+
+Mã thực hiện việc mở tệp data.csv (đây là tên tệp CSV bạn muốn xử lý) và sử dụng sys.stdin = open("data.csv", "r") để chỉ định rằng dữ liệu đầu vào sẽ được đọc từ tệp đó.
+Sau đó, nó gọi CountDepressionByAcademicPressure.run() để thực thi job MapReduce.
+Mục đích và kết quả của mã:
+Mục đích: Phân tích một tập dữ liệu CSV chứa thông tin về sinh viên để đếm số lượng sinh viên có và không có trầm cảm, theo từng mức độ áp lực học tập.
